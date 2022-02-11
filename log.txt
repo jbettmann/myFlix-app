@@ -36,3 +36,15 @@ Timestamp: Thu Feb 10 2022 19:59:44 GMT-0700 (Mountain Standard Time)
 URL: /favicon.ico
 Timestamp: Thu Feb 10 2022 19:59:44 GMT-0700 (Mountain Standard Time)
 
+URL: /
+Timestamp: Thu Feb 10 2022 20:31:54 GMT-0700 (Mountain Standard Time)
+
+URL: /favicon.ico
+Timestamp: Thu Feb 10 2022 20:31:54 GMT-0700 (Mountain Standard Time)
+
+URL: /documentation
+Timestamp: Thu Feb 10 2022 20:32:05 GMT-0700 (Mountain Standard Time)
+
+URL: /favicon.ico
+Timestamp: Thu Feb 10 2022 20:32:05 GMT-0700 (Mountain Standard Time)
+
