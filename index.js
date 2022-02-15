@@ -57,7 +57,7 @@ app.use(express.static('public'));
 // sends response below to homepage 
 app.get('/', (req, res) => {
     res.send(`myFlix. All the greats in one place!`);
-});
+}); 
 
 // response with json object of top 10 movies
 app.get('/movies', (req, res) => {
