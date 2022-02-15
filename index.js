@@ -4,6 +4,50 @@ const express = require('express'),
 
 const app = express();
 
+let topMovies = [
+     {
+        title: 'The Lord Of The Rings: The Two Towers',
+        director: 'Pete Jackson'
+     },
+     {
+        title: 'The Big Lebowski',
+        director: 'Ethan & Joel Coen'
+     },
+     {
+        title: 'The Grand Budapest Hotel',
+        director: 'Wes Anderson'
+     },
+     {
+        title: 'No Country for Old Men',
+        director: 'Ethan & Joel Coen'
+     },
+     {
+        title: 'The Life Aquatic with Steve Zissou',
+        director: 'Wes Anderson'
+     },
+     {
+        title: 'Barry Lyndon',
+        director: 'Stanley Kubrick'
+     },
+     {
+        title: 'Fight Club',
+        director: 'David Fincher'
+     },
+     {
+        title: 'The Matrix',
+        director: 'Lana & Lilly Wachowski'
+     },
+     {
+        title: 'Harry Potter and the Half-Blood Prince',
+        director: 'David Yates'
+     },
+     {
+        title: 'Interstellar',
+        director: 'Christopher Nolan'
+     },
+
+]
+
 // logs requests to console via morgan's common format
 app.use(morgan('common'));
 
