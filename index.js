@@ -210,10 +210,10 @@ app.get('/', (req, res) => {
 }); 
 
 // catches and logs error if occurs
-// app.use((err, req, res, next) => {
-//     console.error(err.stack);
-//     res.status(500).send('Oopps! Something Broke!');
-// });
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Oopps! Something Broke!');
+});
 
 // listens on port 8080 and prints to console when running
 app.listen(8080, () => {
