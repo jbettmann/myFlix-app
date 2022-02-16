@@ -1,7 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
 
-<h1>Movie API</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>myFlix API</title>
+  </head>
+
+  <body>
+    <h1>myFlix API</h1>
 
     <p>This web application provides users with access to information about 
         different movies, directors, and genres. Users will be able to sign up, 
         update their personal information, and create a list of their favorite movies.
     </p>
+
+    <table>
+      <tr>
+        <th>Request</th>
+        <th>URL</th>
+        <th>Request Parameter</th>
+        <th>HTTP Method</th>
+        <th>Request body data format</th>
+        <th>Response body data format</th>
+      </tr>
+      <tr>
+        <td>Returns a list of all movies to the user</td>
+        <td>"/movies"</td>
+        <td>none</td>
+        <td>GET</td>
+        <td>none</td>
+        <td>
+          A JSON object with data on list of all the movies <br />
+          Example: {"title": "exampleTitle", "director": "directorName", "description": ""
+          }
+        </td>
+      </tr>
+      <tr>
+        <td>Returns data about a single movie by title to the user</td>
+        <td>"/movies/:title"</td>
+        <td>:title</td>
+        <td>GET</td>
+        <td>none</td>
+        <td>
+          A JSON object with data about a single movie <br />
+          Example: {"title": "movieTitle", "director": "direcotorName"}
+        </td>
+      </tr>
+      <tr>
+        <td>Returns data about a genre by name</td>
+        <td>"/movies/genre/:genreName"</td>
+        <td>:genreName</td>
+        <td>GET</td>
+        <td>none</td>
+        <td>
+          A JSON object with data about a genre <br />
+          Example: Genre: { "name": "Thriller", "description":""}
+        </td>
+      </tr>
+
+      <tr>
+        <td>Returns details about a director by name</td>
+        <td>"/movies/directors/:directorName"</td>
+        <td>:directorName</td>
+        <td>GET</td>
+        <td>none</td>
+        <td>
+          A JSON object with details about a director <br />
+          Exmple: { "name": "directorName", "age": "directorAge", "bio": "" },
+        </td>
+      </tr>
+      <tr>
+        <td>Allows new users to register</td>
+        <td>"/users"/</td>
+        <td>none</td>
+        <td>POST</td>
+        <td>
+            JSON object with data about the user to add <br />
+            Example: { "id": , "name" : "exampleName"} 
+          </td>
+        <td>
+          JSON object with data about added new user <br />
+          Example: { "id": 5, "name":"exampleName", "favoriteMovies":[] },
+        </td>
+      </tr>
+      <tr>
+        <td>Allows users to update their info</td>
+        <td>"/users/:id"</td>
+        <td>:id</td>
+        <td>PUT</td>
+        <td>none</td>
+        <td>A text message indicating the user info was updated</td>
+      </tr>
+      <tr>
+        <td>Allows users to add a movie to their favorites list</td>
+        <td>"/users/:id/:movieTitle"</td>
+        <td>:movieTitle</td>
+        <td>POST</td>
+        <td>none</td>
+        <td>
+          A text message indicating that a movie has been added to their favorites
+          list.
+        </td>
+      </tr>
+      <tr>
+        <td>Allows users to remove a movie from their favorites list</td>
+        <td>"/users/:id/:movieTitle"</td>
+        <td>:movieTitle</td>
+        <td>DELETE</td>
+        <td>none</td>
+        <td>
+          A text message indicating that a movie has been deleted from their
+          favorites list.
+        </td>
+      </tr>
+      <tr>
+        <td>Allows existing users to deregister</td>
+        <td>"/users/:id"</td>
+        <td>:id</td>
+        <td>DELETE</td>
+        <td>none</td>
+        <td>A text message indicating that the user has been deleted.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
