@@ -6,9 +6,9 @@ different movies, directors, and genres. Users will be able to sign up,
 update their personal information, and create a list of their favorite movies.
 
 ##### Object Format:
-name : , \n
-classes : \n
-    class1 : grade1, /n
+name : , <br>
+classes : 
+    class1 : grade1,
     class2 : grade2
 
 ##### Built With:
