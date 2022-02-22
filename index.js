@@ -114,6 +114,20 @@ app.get('/movies/genre/:genreName', (req, res) => {
     }
 })
 
+// READ (GET) Returns movies that actor is in by actors name
+app.get('/movies/actors/:actorName', (req, res) => {
+    // Object Descruturing
+    const { actorName } = req.params;
+    // searches through topMovies for actor by actor names (.actors).
+    const actor = topMovies.find(movie => movie.actors === actorName);
+
+    if (actor) {
+        res.status(200).json(actor);
+    } else {
+        res.status(400).send('no such actor found');
+    }
+})
+
 // READ (GET) Returns details about director via director name
 app.get('/movies/directors/:directorName', (req, res) => {
     // Object Descruturing
@@ -160,7 +174,7 @@ app.put('/users/:id', (req, res) => {
 });
 
 // CREATE (POST) Add movie to user Favorites
-app.post('/users/:id/:movieTitle', (req, res) => {
+app.post('/users/:id/favorites/:movieTitle', (req, res) => {
     const { id, movieTitle } = req.params;
     // used two (==) equal instead of three (===) because one side is a 'string' other is a number. Is truthy
     let user = users.find(user => user.id == id);
@@ -175,13 +189,43 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 });
 
 // DELETE Remove movie to user Favorites
-app.delete('/users/:id/:movieTitle', (req, res) => {
+app.delete('/users/:id/favorites/:movieTitle', (req, res) => {
     const { id, movieTitle } = req.params;
     // used two (==) equal instead of three (===) because one side is a 'string' other is a number. Is truthy
     let user = users.find(user => user.id == id);
 
     if (user) {
         user.favoriteMovies = user.favoriteMovies.filter(title => title !==  movieTitle);
+        // status code 200 = OK
+        res.status(200).send(`${movieTitle} has been removed from ${user.name}'s array`);
+    } else {
+        res.status(400).send('no such user');
+    }
+});
+
+// CREATE (POST) Add movie to user To Watch
+app.post('/users/:id/toWatch/:movieTitle', (req, res) => {
+    const { id, movieTitle } = req.params;
+    // used two (==) equal instead of three (===) because one side is a 'string' other is a number. Is truthy
+    let user = users.find(user => user.id == id);
+
+    if (user) {
+        user.toWatch.push(movieTitle);
+        // status code 200 = OK
+        res.status(200).send(`${movieTitle} has been added to ${user.name}'s array`);
+    } else {
+        res.status(400).send('no such user');
+    }
+});
+
+// DELETE Remove movie to user To Watch
+app.delete('/users/:id/toWatch/:movieTitle', (req, res) => {
+    const { id, movieTitle } = req.params;
+    // used two (==) equal instead of three (===) because one side is a 'string' other is a number. Is truthy
+    let user = users.find(user => user.id == id);
+
+    if (user) {
+        user.toWatch = user.toWatch.filter(title => title !==  movieTitle);
         // status code 200 = OK
         res.status(200).send(`${movieTitle} has been removed from ${user.name}'s array`);
     } else {
