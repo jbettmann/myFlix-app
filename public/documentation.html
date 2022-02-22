@@ -33,7 +33,7 @@
         <td>none</td>
         <td>
           A JSON object with data on list of all the movies <br />
-          Example: {"title": "exampleTitle", "director": "directorName", "description": ""
+          Example: {Title: "exampleTitle", Description: "movie description here", Director: { Name: "directorName", Bio: "bio description" }, 
           }
         </td>
       </tr>
@@ -45,7 +45,8 @@
         <td>none</td>
         <td>
           A JSON object with data about a single movie <br />
-          Example: {"title": "movieTitle", "director": "direcotorName"}
+          Example: Example: {Title: "exampleTitle", Description: "movie description here", Director: { Name: "directorName", Bio: "bio description" }, 
+          }
         </td>
       </tr>
       <tr>
@@ -56,10 +57,20 @@
         <td>none</td>
         <td>
           A JSON object with data about a genre <br />
-          Example: Genre: { "name": "Thriller", "description":""}
+          Example: Genre: { "name": "Thriller", "description": "description..."}
         </td>
       </tr>
-
+      <tr>
+        <td>Returns movies an actor is in by actor's name</td>
+        <td>"/movies/actors/:actorName"</td>
+        <td>:actorName</td>
+        <td>GET</td>
+        <td>none</td>
+        <td>
+          Example: Example: {Title: "exampleTitle", Description: "movie description here", Director: { Name: "directorName", Bio: "bio description" }, 
+          }
+        </td>
+      </tr>
       <tr>
         <td>Returns details about a director by name</td>
         <td>"/movies/directors/:directorName"</td>
@@ -68,7 +79,7 @@
         <td>none</td>
         <td>
           A JSON object with details about a director <br />
-          Exmple: { "name": "directorName", "age": "directorAge", "bio": "" },
+          Exmple: { Name: "directorName", Bio: "director bio", Age: "56" },
         </td>
       </tr>
       <tr>
@@ -78,11 +89,11 @@
         <td>POST</td>
         <td>
             JSON object with data about the user to add <br />
-            Example: { "id": , "name" : "exampleName"} 
+            Example: { Username: "exampleName", Password: "password1", Email: "email@gmail.com"}
           </td>
         <td>
           JSON object with data about added new user <br />
-          Example: { "id": 5, "name":"exampleName", "favoriteMovies":[] },
+          Example: { ID: 5, Username: "exampleName", Password: "*********", "favoriteMovies":[] },
         </td>
       </tr>
       <tr>
@@ -94,25 +105,47 @@
         <td>A text message indicating the user info was updated</td>
       </tr>
       <tr>
-        <td>Allows users to add a movie to their favorites list</td>
-        <td>"/users/:id/:movieTitle"</td>
+        <td>Allows users to add a movie to their Favorites list</td>
+        <td>"/users/:id/favorites/:movieTitle"</td>
         <td>:movieTitle</td>
         <td>POST</td>
         <td>none</td>
         <td>
-          A text message indicating that a movie has been added to their favorites
+          A text message indicating that a movie has been added to their Favorites
           list.
         </td>
       </tr>
       <tr>
-        <td>Allows users to remove a movie from their favorites list</td>
-        <td>"/users/:id/:movieTitle"</td>
+        <td>Allows users to remove a movie from their Favorites list</td>
+        <td>"/users/:id/favorites/:movieTitle"</td>
         <td>:movieTitle</td>
         <td>DELETE</td>
         <td>none</td>
         <td>
           A text message indicating that a movie has been deleted from their
-          favorites list.
+          Favorites list.
+        </td>
+      </tr>
+      <tr>
+        <td>Allows users to add a movie to their To Watch list</td>
+        <td>"/users/:id/toWatch/:movieTitle"</td>
+        <td>:movieTitle</td>
+        <td>POST</td>
+        <td>none</td>
+        <td>
+          A text message indicating that a movie has been added to their To Watch
+          list.
+        </td>
+      </tr>
+      <tr>
+        <td>Allows users to remove a movie from their To Watch list</td>
+        <td>"/users/:id/toWatch/:movieTitle"</td>
+        <td>:movieTitle</td>
+        <td>DELETE</td>
+        <td>none</td>
+        <td>
+          A text message indicating that a movie has been deleted from their
+          To Watch list.
         </td>
       </tr>
       <tr>
