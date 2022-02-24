@@ -113,7 +113,7 @@
       </tr>
       <tr>
         <td>Allows new users to register</td>
-        <td>"/users"/</td>
+        <td>"/users"</td>
         <td>none</td>
         <td>POST</td>
         <td>
@@ -141,8 +141,8 @@
 
       <tr>
         <td>Allows users to update their info</td>
-        <td>"/users"</td>
-        <td>none</td>
+        <td>"/users/:Username"</td>
+        <td>:Username</td>
         <td>PUT</td>
         <td>JSON object with data to be updated about user <br />
           Example: <br />
