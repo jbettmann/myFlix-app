@@ -25,6 +25,10 @@ app.use(morgan('common'));
 // sends static html page documentation.html
 app.use(express.static('public'));
 
+// sends response below to homepage 
+app.get('/', (req, res) => {
+  res.send(`myFlix. All the greats in one place!`);
+});
 
 // READ (GET) all movies
 app.get('/movies', (req, res) => {
@@ -53,11 +57,10 @@ app.get('/movies/:title', (req, res) => {
 
 // READ (GET) Returns details about genre by name
 app.get('/movies/genres/:genre', (req, res) => {
-    console.log(req.params)
     // condition to find specific user based on Username (similar to WHERE in SQL)
-    Movies.find({ Genre: req.params.genre })
-    .then((genre) => {
-      res.json(genre);
+    Movies.findOne({ 'Genre.Name': req.params.genre })
+    .then((movie) => {
+      res.json(movie.Genre.Description);
     }).catch((err) => {
       console.error(err);
       res.status(500).send('Error: ' + err);
@@ -68,9 +71,8 @@ app.get('/movies/genres/:genre', (req, res) => {
 app.get('/movies/actors/:actor', (req, res) => {
    // condition to find specific user based on Username (similar to WHERE in SQL)
    Movies.find({ Actors: req.params.actor })
-   .then((actor) => {
-       console.log(actor);
-     res.json(actor);
+   .then((movie) => {
+     res.json(movie);
    })
    .catch((err) => {
      console.error(err);
@@ -79,17 +81,15 @@ app.get('/movies/actors/:actor', (req, res) => {
 });
 
 // READ (GET) Returns details about director via director name
-app.get('/movies/directors/:directorName', (req, res) => {
-    // Object Descruturing
-    const { directorName } = req.params;
-    // searches through topMovies for director by director name (.director.name) The .director at the end very IMPORTANT, returns just the info about director instead of entire (movie) object.
-    const director = topMovies.find(movie => movie.director === directorName).director;
-
-    if (director) {
-        res.status(200).json(director);
-    } else {
-        res.status(400).send('no such director found');
-    }
+app.get('/movies/directors/:director', (req, res) => {
+    // condition to find specific user based on Username (similar to WHERE in SQL)
+    Movies.findOne({ 'Director.Name': req.params.director })
+    .then((movie) => {
+      res.json(movie.Director);
+    }).catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 // READ (GET) all users
@@ -182,12 +182,11 @@ app.put('/users/:Username', (req, res) => {
 
 
 // CREATE (POST) Add movie to user Favorites
-app.post('/users/:userName/favorites/:movieTitle', (req, res) => { 
-    const { userName, movieTitle } = req.params;
-    Users.findOneAndUpdate({ Username: userName.Username }, 
-        { $addToSet: { FavoriteMovies: movieTitle.MovieID }
-         },
-         { new: true }, // This line makes sure that the updated document is returned
+app.post('/users/:Username/favorites/:movieID', (req, res) => { 
+    Users.findOneAndUpdate({ Username: req.params.Username },
+      {$addToSet: { FavoriteMovies: req.params.movieID }
+      },
+    { new: true }, // This line makes sure that the updated document is returned
         (err, updatedUser) => {
           if (err) {
             console.error(err);
@@ -199,10 +198,9 @@ app.post('/users/:userName/favorites/:movieTitle', (req, res) => {
       });
 
 // DELETE Remove movie to user Favorites
-app.delete('/users/:userName/favorites/:movieTitle', (req, res) => {
-    const { userName, movieTitle } = req.params;
-    Users.findOneAndUpdate({ Username: userName.Username }, 
-        { $pullt: { FavoriteMovies: movieTitle.MovieID }
+app.delete('/users/:Username/favorites/:movieID', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, 
+        { $pull: { FavoriteMovies: req.params.movieID }
          },
          { new: true }, // This line makes sure that the updated document is returned
         (err, updatedUser) => {
@@ -216,38 +214,36 @@ app.delete('/users/:userName/favorites/:movieTitle', (req, res) => {
       });
 
 // CREATE (POST) Add movie to user To Watch
-app.post('/users/:userName/toWatch/:movieTitle', (req, res) => {
-    const { userName, movieTitle } = req.params;
-    Users.findOneAndUpdate({ Username: userName.Username }, 
-        { $addToSet: { toWatch: movieTitle.MovieID }
-         },
-         { new: true }, // This line makes sure that the updated document is returned
-        (err, updatedUser) => {
-          if (err) {
-            console.error(err);
-            res.status(500).send(`Error: ${err}`);
-          } else {
-            res.json(updatedUser);
-          }
-        });
+app.post('/users/:Username/ToWatch/:movieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username },
+    {$addToSet: { ToWatch: req.params.movieID }
+    },
+  { new: true }, // This line makes sure that the updated document is returned
+      (err, updatedUser) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send(`Error: ${err}`);
+        } else {
+          res.json(updatedUser);
+        }
       });
+    });
 
 // DELETE Remove movie to user To Watch
-app.delete('/users/:userName/toWatch/:movieTitle', (req, res) => {
-    const { userName, movieTitle } = req.params;
-    Users.findOneAndUpdate({ Username: userName.Username }, 
-        { $pullt: { toWatch: movieTitle.MovieID }
-         },
-         { new: true }, // This line makes sure that the updated document is returned
-        (err, updatedUser) => {
-          if (err) {
-            console.error(err);
-            res.status(500).send(`Error: ${err}`);
-          } else {
-            res.json(updatedUser);
-          }
-        });
-      });
+app.delete('/users/:Username/ToWatch/:movieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, 
+    { $pull: { ToWatch: req.params.movieID }
+     },
+     { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send(`Error: ${err}`);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+  });
 
 // DELETE Allows existing user to deregester 
 app.delete('/users/:Username', (req, res) => {
@@ -263,11 +259,6 @@ app.delete('/users/:Username', (req, res) => {
       console.error(err);
       res.status(500).send(`Error: ${err}`);
     });
-});
-
-// sends response below to homepage 
-app.get('/', (req, res) => {
-    res.send(`myFlix. All the greats in one place!`);
 }); 
 
 // catches and logs error if occurs
