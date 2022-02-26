@@ -4,9 +4,10 @@ const express = require('express'),
     uuid = require('uuid'),
     morgan = require('morgan'),
     mongoose = require('mongoose'), // Intergrates mongoose into file
-    Models = require('./models.js'); // allows access to database schema
+    Models = require('./models.js'), // allows access to database schema
+    cors = require('cors'); // Cross-Orgin Resourse Sharing 
     
-
+const { check, validationResult } = require('express-validator');
 
 // Refer to models named in models.js
 const Movies = Models.Movie;
@@ -16,6 +17,23 @@ const Users = Models.User;
 mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true});
 
 const app = express();
+
+// List of allowed domains
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+     // If a specific origin isn't found on the list of allowed origins
+    if(allowedOrigins.indexOf(origin) === -1) {
+      let message = `The CORS olicy for this application doesn't all acess from origin ${origin}`;
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -123,31 +141,52 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
     
 
 // CREATE (POST) Add new users registration
-app.post('/users', (req, res) => {
-    // check if user already exists
-    Users.findOne({ Username: req.body.Username})
-        .then((user) => {
-            // returns if user exists
-            if (user) {
-                return res.status(400).send(`${req.body.Username} already exists`);
-            // creates and returns if user DOES NOT exist 
-            } else {
-                Users.create({ // .create takes and object based on schema
-                    Username: req.body.Username, // remember 'req.body' is request that user sends
-                    Password: req.body.Password,
-                    Email: req.body.Email,
-                    Birthday: req.body.Birthday
-                })
-                .then((user) => { res.status(201).json(user) })
-                .catch((erro) => {
-                    console.error(error);
-                    res.status(500).send(`Error: ${error}`);
-                })
-            }
-        }).catch((error) => {
-            console.error(error);
-            res.status(500).send(`Error: ${error}`);
-        })
+app.post('/users', [ 
+
+  // Validation logic
+  //minimum value of 5 characters are only allowed
+  check('Username', 'Username is required').isLength({min: 5}),
+
+  // field can only contain letters and numbers
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(), 
+
+  // Chain of methods like .not().isEmpty() which means "opposite of isEmpty" or "is not empty"
+  check('Password', 'Password is required').not().isEmpty(), 
+
+  // field must be formatted as an email address
+  check('Email', 'Email does not appear to be valid').isEmail()], (req, res) => {
+
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  let hashedPassword = User.hashPassword(req.body.Password);
+  // check if user already exists
+  Users.findOne({ Username: req.body.Username})
+      .then((user) => {
+        // returns if user exists
+        if (user) {
+            return res.status(400).send(`${req.body.Username} already exists`);
+        // creates and returns if user DOES NOT exist 
+        } else {
+            Users.create({ // .create takes and object based on schema
+                Username: req.body.Username, // remember 'req.body' is request that user sends
+                Password: hashedPassword, // Hashes password entered  when registering before storing in MongoDB
+                Email: req.body.Email,
+                Birthday: req.body.Birthday
+            })
+            .then((user) => { res.status(201).json(user) })
+            .catch((erro) => {
+                console.error(error);
+                res.status(500).send(`Error: ${error}`);
+            })
+          }
+      }).catch((error) => {
+          console.error(error);
+          res.status(500).send(`Error: ${error}`);
+      })
 });
 
 // Defined for API endpoints 
@@ -271,7 +310,8 @@ app.use((err, req, res, next) => {
     res.status(500).send('Oopps! Something Broke!');
 });
 
-// listens on port 8080 and prints to console when running
-app.listen(8080, () => {
-    console.log('myFlix app listening on port 8080');
+// process.env.PORT listens for pre-configured port number or, if not found, set port to pertain port number
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Listening on Port ${port}`);
 });
