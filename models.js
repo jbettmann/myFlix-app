@@ -1,5 +1,7 @@
 
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'),
+        bcrypt = require('bcrypt'); // hashes user password and compares everytime user logs in
+
 // Movie schema being defined for Movies Collection. It follows a syntax of Key: {Value}, format.
 let movieSchema = mongoose.Schema( {
     Title: {type: String, requirted: true},
@@ -28,6 +30,16 @@ let userSchema = mongoose.Schema( {
     FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}],
     ToWatch: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
 });
+
+// Function hashes users summited password
+userSchema.statics.hashPassword = (password) => {
+    return bcrypt.hashSync(password, 10);
+};
+
+// Function compares submitted hashed password with hashed password stored in database
+userSchema.methods.validatePassword = function(password) {
+    return bcrypt.compareSync(password, this.Password);
+};
 
 // Watch capital letters and plurals. Below will make db.movies and db.users
 let Movie = mongoose.model('Movie', movieSchema);
