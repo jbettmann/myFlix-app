@@ -218,7 +218,13 @@ app.put('/users/:Username', [
   check('Password', 'Password is required').not().isEmpty(), 
 
   // field must be formatted as an email address
-  check('Email', 'Email does not appear to be valid').isEmail()], passport.authenticate('jwt', { session: false }), (req, res) => {
+  check('Email', 'Email does not appear to be valid').isEmail() ], (req, res) => {
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
     Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
         {
           Username: req.body.Username,
