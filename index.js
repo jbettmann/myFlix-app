@@ -14,7 +14,9 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 // allows Mongoose to conncect to database to perform CRUD operations on doc
-mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true});
+// mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true});
+
 
 const app = express();
 
@@ -49,7 +51,7 @@ app.use(express.static('public'));
 
 // sends response below to homepage 
 app.get('/', (req, res) => {
-  res.send(`myFlix. All the greats in one place!`);
+  res.send(`myFlix. All the greats, in one place!`);
 });
 
 // READ (GET) all movies
@@ -315,3 +317,4 @@ const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0', () => {
     console.log(`Listening on Port ${port}`);
 });
+
