@@ -206,6 +206,7 @@ app.post('/users', [
 
 // UPDATE a user's info, by username
 app.put('/users/:Username', [ 
+  passport.authenticate('jwt', { session: false }),
 
   // Validation logic
   //minimum value of 5 characters are only allowed
