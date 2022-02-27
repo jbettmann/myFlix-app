@@ -205,7 +205,20 @@ app.post('/users', [
 //     }
 
 // UPDATE a user's info, by username
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }),  [ 
+
+  // Validation logic
+  //minimum value of 5 characters are only allowed
+  check('Username', 'Username is required').isLength({min: 5}),
+
+  // field can only contain letters and numbers
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(), 
+
+  // Chain of methods like .not().isEmpty() which means "opposite of isEmpty" or "is not empty"
+  check('Password', 'Password is required').not().isEmpty(), 
+
+  // field must be formatted as an email address
+  check('Email', 'Email does not appear to be valid').isEmail()], (req, res) => {
     Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
         {
           Username: req.body.Username,
