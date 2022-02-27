@@ -180,7 +180,7 @@ app.post('/users', [
                 Birthday: req.body.Birthday
             })
             .then((user) => { res.status(201).json(user) })
-            .catch((erro) => {
+            .catch((error) => {
                 console.error(error);
                 res.status(500).send(`Error: ${error}`);
             })
