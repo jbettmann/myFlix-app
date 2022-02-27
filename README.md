@@ -7,15 +7,16 @@ update their personal information, and create a list of their favorite movies.
 
 #### Object Format:
         { 
-        "name" : "John Doe", 
-        "classes" : 
-            "class1" : "grade1",
-            "class2" : "grade2"
+        "Movie" : "Joe Dirt", 
+        "Director" : 
+            "Name" : "Dennie Gordon",
+            "Bio" : "Decription here.."
         }
-    }
         
 
 #### Built With:
 - Node.js
 - Express
+- MongoDB
+- Mongoose
 - React 
