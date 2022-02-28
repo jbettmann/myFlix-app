@@ -15,8 +15,9 @@ update their personal information, and create a list of their favorite movies.
         
 
 #### Built With:
-- Node.js
-- Express
+MERN stack
 - MongoDB
-- Mongoose
-- React 
+- Express
+- React
+- Node.js
+-
