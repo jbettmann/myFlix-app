@@ -14,8 +14,7 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 // allows Mongoose to conncect to database to perform CRUD operations on doc
-// mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true});
 
 
 const app = express();
@@ -28,7 +27,7 @@ app.use(cors({
     if(!origin) return callback(null, true);
      // If a specific origin isn't found on the list of allowed origins
     if(allowedOrigins.indexOf(origin) === -1) {
-      let message = `The CORS olicy for this application doesn't all acess from origin ${origin}`;
+      let message = `The CORS policy for this application doesn't all access from origin ${origin}`;
       return callback(new Error(message), false);
     }
     return callback(null, true);
@@ -54,16 +53,18 @@ app.get('/', (req, res) => {
   res.send(`myFlix. All the greats, in one place!`);
 });
 
+let handleError = (err) => {
+  console.error(err);
+  res.status(500).send(`Error: ${err}`);
+};
+
 // READ (GET) all movies
 app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movies.find() // .find() grabs data on all documents in collection
         .then((movies) => {
             res.status(201).json(movies);
         })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send(`Error: ${err}`);
-        });
+        .catch(handleError);
     });
 
 // READ (GET) Returns details about single movie by title search
@@ -73,10 +74,7 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
    .then((title) => {
      res.json(title);
    })
-   .catch((err) => {
-     console.error(err);
-     res.status(500).send('Error: ' + err);
-   });
+   .catch(handleError);
 });
 
 // READ (GET) Returns details about genre by name
@@ -85,10 +83,7 @@ app.get('/movies/genres/:genre', passport.authenticate('jwt', { session: false }
     Movies.findOne({ 'Genre.Name': req.params.genre })
     .then((movie) => {
       res.json(movie.Genre.Description);
-    }).catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
+    }).catch(handleError);
 });
 
 // READ (GET) Returns movies that actor is in by actors name
@@ -98,10 +93,7 @@ app.get('/movies/actors/:actor', passport.authenticate('jwt', { session: false }
    .then((movie) => {
      res.json(movie);
    })
-   .catch((err) => {
-     console.error(err);
-     res.status(500).send('Error: ' + err);
-   });
+   .catch(handleError);
 });
 
 // READ (GET) Returns details about director via director name
@@ -110,10 +102,7 @@ app.get('/movies/directors/:director', passport.authenticate('jwt', { session: f
     Movies.findOne({ 'Director.Name': req.params.director })
     .then((movie) => {
       res.json(movie.Director);
-    }).catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
+    }).catch(handleError);
 });
 
 // READ (GET) all users
@@ -122,10 +111,7 @@ app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) =
         .then((users) => {
             res.status(201).json(users);
         })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send(`Error: ${err}`);
-        });
+        .catch(handleError);
     });
 
 // READ (GET) users by username
@@ -135,10 +121,7 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
     .then((user) => {
       res.json(user);
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
-    });
+    .catch(handleError);
 });
     
 
@@ -180,15 +163,9 @@ app.post('/users', [
                 Birthday: req.body.Birthday
             })
             .then((user) => { res.status(201).json(user) })
-            .catch((error) => {
-                console.error(error);
-                res.status(500).send(`Error: ${error}`);
-            })
+            .catch(handleError)
           }
-      }).catch((error) => {
-          console.error(error);
-          res.status(500).send(`Error: ${error}`);
-      })
+      }).catch(handleError);
 });
 
 // Defined for API endpoints 
@@ -238,8 +215,7 @@ app.put('/users/:Username', [
       { new: true }, // This line makes sure that the updated document is returned
       (err, updatedUser) => {
         if(err) {
-          console.error(err);
-          res.status(500).send('Error: ' + err);
+          handleError(err);
         } else {
           res.json(updatedUser);
         }
@@ -255,8 +231,7 @@ app.post('/users/:Username/favorites/:movieID', passport.authenticate('jwt', { s
     { new: true }, // This line makes sure that the updated document is returned
         (err, updatedUser) => {
           if (err) {
-            console.error(err);
-            res.status(500).send(`Error: ${err}`);
+            handleError(err);
           } else {
             res.json(updatedUser);
           }
@@ -271,8 +246,7 @@ app.delete('/users/:Username/favorites/:movieID', passport.authenticate('jwt', {
          { new: true }, // This line makes sure that the updated document is returned
         (err, updatedUser) => {
           if (err) {
-            console.error(err);
-            res.status(500).send(`Error: ${err}`);
+            handleError(err);
           } else {
             res.json(updatedUser);
           }
@@ -287,8 +261,7 @@ app.post('/users/:Username/ToWatch/:movieID', passport.authenticate('jwt', { ses
   { new: true }, // This line makes sure that the updated document is returned
       (err, updatedUser) => {
         if (err) {
-          console.error(err);
-          res.status(500).send(`Error: ${err}`);
+          handleError(err);
         } else {
           res.json(updatedUser);
         }
@@ -303,8 +276,7 @@ app.delete('/users/:Username/ToWatch/:movieID', passport.authenticate('jwt', { s
      { new: true }, // This line makes sure that the updated document is returned
     (err, updatedUser) => {
       if (err) {
-        console.error(err);
-        res.status(500).send(`Error: ${err}`);
+        handleError(err);
       } else {
         res.json(updatedUser);
       }
@@ -321,10 +293,7 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
         res.status(200).send(`${req.params.Username} was deleted.`);
       }
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send(`Error: ${err}`);
-    });
+    .catch(handleError);
 }); 
 
 // catches and logs error if occurs
