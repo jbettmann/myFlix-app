@@ -215,8 +215,7 @@ app.put('/users/:Username', [
       { new: true }, // This line makes sure that the updated document is returned
       (err, updatedUser) => {
         if(err) {
-          console.error(err);
-          res.status(500).send(`Error: ${err}`);
+          handleError(err);
         } else {
           res.json(updatedUser);
         }
@@ -298,10 +297,10 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
 }); 
 
 // catches and logs error if occurs
-// app.use((err, req, res, next) => {
-//     console.error(err.stack);
-//     res.status(500).send('Oopps! Something Broke!');
-// });
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Oopps! Something Broke!');
+});
 
 // process.env.PORT listens for pre-configured port number or, if not found, set port to pertain port number
 const port = process.env.PORT || 8080;
