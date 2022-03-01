@@ -215,7 +215,8 @@ app.put('/users/:Username', [
       { new: true }, // This line makes sure that the updated document is returned
       (err, updatedUser) => {
         if(err) {
-          handleError(err);
+          console.error(err);
+          res.status(500).send(`Error: ${err}`);
         } else {
           res.json(updatedUser);
         }
@@ -238,7 +239,7 @@ app.post('/users/:Username/favorites/:movieID', passport.authenticate('jwt', { s
         });
       });
 
-// DELETE Remove movie to user Favorites
+// DELETE Remove movie from user Favorites
 app.delete('/users/:Username/favorites/:movieID', passport.authenticate('jwt', { session: false }), (req, res) => {
     Users.findOneAndUpdate({ Username: req.params.Username }, 
         { $pull: { FavoriteMovies: req.params.movieID }
@@ -268,7 +269,7 @@ app.post('/users/:Username/ToWatch/:movieID', passport.authenticate('jwt', { ses
       });
     });
 
-// DELETE Remove movie to user To Watch
+// DELETE Remove movie from user To Watch
 app.delete('/users/:Username/ToWatch/:movieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username }, 
     { $pull: { ToWatch: req.params.movieID }
