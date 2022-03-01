@@ -298,10 +298,10 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
 }); 
 
 // catches and logs error if occurs
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Oopps! Something Broke!');
-});
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).send('Oopps! Something Broke!');
+// });
 
 // process.env.PORT listens for pre-configured port number or, if not found, set port to pertain port number
 const port = process.env.PORT || 8080;
