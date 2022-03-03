@@ -59,7 +59,8 @@ let handleError = (err) => {
 };
 
 // READ (GET) all movies
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/movies', //passport.authenticate('jwt', { session: false }),
+ (req, res) => {
     Movies.find() // .find() grabs data on all documents in collection
         .then((movies) => {
             res.status(201).json(movies);
