@@ -20,7 +20,7 @@ mongoose.connect(process.env.CONNECTION_URI || 'mongodb://localhost:27017/myFlix
 const app = express();
 
 // List of allowed domains
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+let allowedOrigins = "*"; //['http://localhost:8080', 'http://testsite.com'];
 
 app.use(cors({
   origin: (origin, callback) => {
