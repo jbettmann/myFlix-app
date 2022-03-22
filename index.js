@@ -224,6 +224,28 @@ app.put('/users/:Username', [
     });
 
 
+app.put('/movies/:Title',  passport.authenticate('jwt', { session: false }), (req, res) => {
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+    Movies.findOneAndUpdate({ Title: req.params.Title }, { $set:
+        {
+          ImageUrl: req.body.ImageUrl
+        }
+      },
+      { new: true }, // This line makes sure that the updated document is returned
+      (err, updatedUser) => {
+        if(err) {
+          handleError(err);
+        } else {
+          res.json(updatedUser);
+        }
+      });
+    });    
+
 // CREATE (POST) Add movie to user Favorites
 app.post('/users/:Username/favorites/:movieID', passport.authenticate('jwt', { session: false }), (req, res) => { 
     Users.findOneAndUpdate({ Username: req.params.Username },
