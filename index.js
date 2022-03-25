@@ -224,7 +224,7 @@ app.put('/users/:Username', [
     });
 
 
-app.put('/movies/:Title',  passport.authenticate('jwt', { session: false }), (req, res) => {
+app.put('/movies/:movieID',  passport.authenticate('jwt', { session: false }), (req, res) => {
   // check the validation object for errors
   let errors = validationResult(req);
 
