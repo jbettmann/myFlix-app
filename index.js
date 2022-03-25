@@ -233,7 +233,14 @@ app.put('/movies/:Title',  passport.authenticate('jwt', { session: false }), (re
   }
     Movies.findOneAndUpdate({ Title: req.params.Title }, { $set:
         {
-          ImageUrl: req.body.ImageUrl
+          Director:[
+            {
+              Name: req.body.Name,
+              Bio: req.body.Bio,
+              Birth: req.body.Birth,
+              Death: req.body.Death
+            }
+          ] 
         }
       },
       { new: true }, // This line makes sure that the updated document is returned
