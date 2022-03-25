@@ -231,7 +231,7 @@ app.put('/movies/:movieID',  passport.authenticate('jwt', { session: false }), (
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-    Movies.findOneAndUpdate({ Title: req.params.Title }, { $set:
+    Movies.findOneAndUpdate({ movieID: req.params.movieID }, { $set:
         {
           Director:[
             {
