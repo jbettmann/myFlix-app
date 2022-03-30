@@ -222,36 +222,7 @@ app.put('/users/:Username', [
         }
       });
     });
-
-
-app.put('/movies/:movieID',  passport.authenticate('jwt', { session: false }), (req, res) => {
-  // check the validation object for errors
-  let errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-    Movies.findOneAndUpdate({ _id: req.params.movieID }, { $set:
-        {
-          Director:[
-            {
-              Name: req.body.Name,
-              Bio: req.body.Bio,
-              Birth: req.body.Birth,
-              Death: req.body.Death
-            }
-          ] 
-        }
-      },
-      { new: true }, // This line makes sure that the updated document is returned
-      (err, updatedUser) => {
-        if(err) {
-          handleError(err);
-        } else {
-          res.json(updatedUser);
-        }
-      });
-    });    
+ 
 
 // CREATE (POST) Add movie to user Favorites
 app.post('/users/:Username/favorites/:movieID', passport.authenticate('jwt', { session: false }), (req, res) => { 
