@@ -51,7 +51,9 @@ let auth = require("./auth")(app); // (app) ensures Express is available in auth
 const passport = require("passport");
 require("./passport");
 
-// logs requests to console via morgan's common format
+/**
+ * Logs basic request data in terminal using Morgan middleware library
+ */
 app.use(morgan("common"));
 
 // sends static html page documentation.html
@@ -67,7 +69,12 @@ let handleError = (err) => {
   res.status(500).send(`Error: ${err}`);
 };
 
-// READ (GET) all movies
+/**
+ * GET: Returns a list of ALL movies to the user
+ * Request body: Bearer token
+ * @returns array of movie objects
+ * @requires passport
+ */
 app.get(
   "/movies",
   passport.authenticate("jwt", { session: false }),
@@ -80,7 +87,13 @@ app.get(
   }
 );
 
-// READ (GET) Returns details about single movie by title search
+/**
+ * GET: Returns data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title to the user
+ * Request body: Bearer token
+ * @param title (title of movie)
+ * @returns movie object
+ * @requires passport
+ */
 app.get(
   "/movies/:title",
   passport.authenticate("jwt", { session: false }),
@@ -94,7 +107,13 @@ app.get(
   }
 );
 
-// READ (GET) Returns details about genre by name
+/**
+ * GET: Returns data about a genre (description) by name/title (e.g., “Fantasy”)
+ * Request body: Bearer token
+ * @param genre (name of genre)
+ * @returns genre object
+ * @requires passport
+ */
 app.get(
   "/movies/genres/:genre",
   passport.authenticate("jwt", { session: false }),
@@ -108,7 +127,13 @@ app.get(
   }
 );
 
-// READ (GET) Returns movies that actor is in by actors name
+/**
+ * GET: Returns data about a actor by name
+ * Request body: Bearer token
+ * @param actor (name of actor)
+ * @returns actor object
+ * @requires passport
+ */
 app.get(
   "/movies/actors/:actor",
   passport.authenticate("jwt", { session: false }),
@@ -122,7 +147,13 @@ app.get(
   }
 );
 
-// READ (GET) Returns details about director via director name
+/**
+ * GET: Returns data about a director (bio, birth year, death year) by name
+ * Request body: Bearer token
+ * @param director (name of director)
+ * @returns director object
+ * @requires passport
+ */
 app.get(
   "/movies/directors/:director",
   passport.authenticate("jwt", { session: false }),
@@ -136,7 +167,12 @@ app.get(
   }
 );
 
-// READ (GET) all users
+/**
+ * GET: Returns a list of ALL users
+ * Request body: Bearer token
+ * @returns array of user objects
+ * @requires passport
+ */
 app.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
@@ -149,7 +185,13 @@ app.get(
   }
 );
 
-// READ (GET) users by username
+/**
+ * GET: Returns data on a single user (user object) by username
+ * Request body: Bearer token
+ * @param Username
+ * @returns user object
+ * @requires passport
+ */
 app.get(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -163,7 +205,11 @@ app.get(
   }
 );
 
-// CREATE (POST) Add new users registration
+/**
+ * POST: Allows new users to register; Username, Password & Email are required fields!
+ * Request body: Bearer token, JSON with user information
+ * @returns user object
+ */
 app.post(
   "/users",
   [
@@ -228,8 +274,13 @@ app.post(
 //         // status code 400 = bad request
 //         res.status(400).send('users need name');
 //     }
-
-// UPDATE a user's info, by username
+/**
+ * PUT: Allow users to update their user info (find by username)
+ * Request body: Bearer token, updated user info
+ * @param Username
+ * @returns user object with updates
+ * @requires passport
+ */
 app.put(
   "/users/:Username",
   [
@@ -281,7 +332,14 @@ app.put(
   }
 );
 
-// CREATE (POST) Add movie to user Favorites
+/**
+ * POST: Allows users to add a movie to their list of favorites
+ * Request body: Bearer token
+ * @param username
+ * @param movieId
+ * @returns user object
+ * @requires passport
+ */
 app.post(
   "/users/:Username/favorites/:movieID",
   passport.authenticate("jwt", { session: false }),
@@ -301,7 +359,14 @@ app.post(
   }
 );
 
-// DELETE Remove movie from user Favorites
+/**
+ * DELETE: Allows users to remove a movie from their list of favorites
+ * Request body: Bearer token
+ * @param Username
+ * @param movieId
+ * @returns user object
+ * @requires passport
+ */
 app.delete(
   "/users/:Username/favorites/:movieID",
   passport.authenticate("jwt", { session: false }),
@@ -321,7 +386,14 @@ app.delete(
   }
 );
 
-// CREATE (POST) Add movie to user To Watch
+/**
+ * POST: Allows users to add a movie to their list of to watch
+ * Request body: Bearer token
+ * @param username
+ * @param movieId
+ * @returns user object
+ * @requires passport
+ */
 app.post(
   "/users/:Username/ToWatch/:movieID",
   passport.authenticate("jwt", { session: false }),
@@ -341,7 +413,14 @@ app.post(
   }
 );
 
-// DELETE Remove movie from user To Watch
+/**
+ * DELETE: Allows users to remove a movie from their list of to watch
+ * Request body: Bearer token
+ * @param Username
+ * @param movieId
+ * @returns user object
+ * @requires passport
+ */
 app.delete(
   "/users/:Username/ToWatch/:movieID",
   passport.authenticate("jwt", { session: false }),
@@ -361,7 +440,13 @@ app.delete(
   }
 );
 
-// DELETE Allows existing user to deregester
+/**
+ * DELETE: Allows existing users to deregister
+ * Request body: Bearer token
+ * @param Username
+ * @returns success message
+ * @requires passport
+ */
 app.delete(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
