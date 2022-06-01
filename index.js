@@ -24,7 +24,7 @@ const app = express();
 let allowedOrigins = [
   "http://localhost:8080",
   "http://testsite.com",
-  "http://localhost:49899",
+  "http://localhost:1234",
   "http://localhost:4200",
   "https://bettsmyflix.netlify.app",
   "https://jbettmann.github.io",
