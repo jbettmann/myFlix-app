@@ -7,7 +7,7 @@ different movies, directors, and genres. Users will be able to sign up,
 update their personal information, and create a list of their favorite movies.
 The database requires authentication and authorization using basic HTTP authentication and JWT (token-based) authentication.
 
-![screenshot of live myFlix API] (https://user-images.githubusercontent.com/96999730/171469996-0ab8daa2-e363-421a-b037-e3b062a71b34.png)
+![screenshot of live myFlix API](https://user-images.githubusercontent.com/96999730/171469996-0ab8daa2-e363-421a-b037-e3b062a71b34.png)
 
 ## Built With
 
