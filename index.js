@@ -27,6 +27,7 @@ let allowedOrigins = [
   "http://localhost:1234",
   "http://localhost:4200",
   "https://bettsmyflix.netlify.app",
+  "https://my-flix-app.vercel.app",
   "https://jbettmann.github.io",
 ];
 
