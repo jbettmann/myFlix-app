@@ -1,6 +1,6 @@
 const express = require("express"),
-  bodyParser = require("body-parser"), // middleware for req body parsing
-  uuid = require("uuid"), //Universally Unique Identifier. Generate a unique ID
+  bodyParser = require("body-parser"),
+  uuid = require("uuid"),
   morgan = require("morgan"),
   mongoose = require("mongoose"), // Intergrates mongoose into file
   Models = require("./models.js"), // allows access to database schema
@@ -9,16 +9,12 @@ const express = require("express"),
 const { check, validationResult } = require("express-validator");
 
 // Refer to models named in models.js
-const Users = Models.User;
-const Beers = Models.Beer;
-const Breweries = Models.Brewery;
-const Categories = Models.Category;
-
 const Movies = Models.Movie;
+const Users = Models.User;
 
 // allows Mongoose to conncect to database to perform CRUD operations on doc
 mongoose.connect(
-  process.env.CONNECTION_URI || "mongodb://localhost:27017/BeerBibleDB",
+  process.env.CONNECTION_URI || "mongodb://localhost:27017/myFlixDB",
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
@@ -70,183 +66,8 @@ app.get("/", (req, res) => {
 
 let handleError = (err) => {
   console.error(err);
-  console.log(err);
   res.status(500).send(`Error: ${err}`);
 };
-
-// ************************** BeerBible API ************************************************
-
-/**
- * POST: Creates new user; Username, Password & Email are required fields!
- * Request body: Bearer token, JSON with user information
- * @returns user object
- */
-app.post(
-  "/users",
-  [
-    // Validation logic
-    //minimum value of 5 characters are only allowed
-    check("username", "Username is required").isLength({ min: 5 }),
-
-    // field can only contain letters and numbers
-    check(
-      "username",
-      "Username contains non alphanumeric characters - not allowed."
-    ).isAlphanumeric(),
-
-    // Chain of methods like .not().isEmpty() which means "opposite of isEmpty" or "is not empty"
-    check("password", "Password is required").not().isEmpty(),
-
-    // field must be formatted as an email address
-    check("email", "Email does not appear to be valid").isEmail(),
-  ],
-  (req, res) => {
-    // check the validation object for errors
-    let errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-    let hashedPassword = Users.hashPassword(req.body.password);
-    // check if user already exists
-    Users.findOne({ email: req.body.email })
-      .then((user) => {
-        // returns if user exists
-        if (user) {
-          return res
-            .status(400)
-            .send(`An account with ${req.body.email} already exists`);
-          // creates and returns if user DOES NOT exist
-        } else {
-          Users.create({
-            fullName: req.body.fullName,
-            // .create takes and object based on schema
-            username: req.body.username, // remember 'req.body' is request that user sends
-            password: hashedPassword, // Hashes password entered  when registering before storing in MongoDB
-            email: req.body.email,
-            breweries: [],
-          })
-            .then((user) => {
-              res.status(201).json(user);
-            })
-            .catch(handleError);
-        }
-      })
-      .catch(handleError);
-  }
-);
-
-/**
- * POST: Creates new beer; Name & Style are required fields!
- * Request body: Bearer token, JSON with user information
- * @returns beer object
- */
-app.post(
-  "/:user/:brewery/beers",
-  [
-    // passport.authenticate("jwt", { session: false }),
-    // Validation logic
-    //minimum value of 1 characters are only allowed
-    check("name", "Beer name is required").isLength({ min: 1 }),
-
-    // field can only contain letters and numbers
-    check("style", "Style of beer is required").isLength({ min: 1 }),
-  ],
-  async (req, res) => {
-    // check the validation object for errors
-    let errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
-    try {
-      const user = await Users.findById(req.params.user);
-      if (!user) {
-        return res.status(400).send("User not found");
-      }
-
-      const brewery = await Breweries.findOne({
-        _id: req.params.brewery,
-        $or: [{ staff: { $in: [user._id] } }, { owner: user._id }],
-      });
-
-      if (!brewery) {
-        return res.status(400).send("User is not an admin or owner");
-      }
-
-      const beer = new Beers({
-        name: req.body.name,
-        style: req.body.style,
-        abv: req.body.abv,
-        category: req.body.category,
-        malt: req.body.malt,
-        hops: req.body.hops,
-        flavorNotes: req.body.flavorNotes,
-        aroma: req.body.aroma,
-        nameSake: req.body.nameSake,
-        notes: req.body.notes,
-      });
-
-      /* using save() instead of create() allows us 
-      to check if the beer document is valid 
-      before saving to database 
-      */
-      await beer.validate();
-      const savedBeer = await beer.save();
-
-      if (savedBeer) {
-        brewery.beers.push(savedBeer._id);
-        await brewery.save();
-        res.status(201).json({ savedBeer });
-      } else {
-        throw new Error("Beer save operation failed");
-      }
-    } catch (error) {
-      handleError(error);
-    }
-  }
-);
-
-// GET REQUEST ******************
-
-/**
- * GET: Returns a list of ALL users
- * Request body: Bearer token
- * @returns array of user objects
- * @requires passport
- */
-app.get(
-  "/users",
-  // passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    Users.find() // .find() grabs data on all documents in collection
-      .then((users) => {
-        res.status(201).json(users);
-      })
-      .catch(handleError);
-  }
-);
-
-/**
- * GET: Returns a list of ALL breweries
- * Request body: Bearer token
- * @returns array of brewery objects
- * @requires passport
- */
-app.get(
-  "/breweries",
-  // passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    Breweries.find() // .find() grabs data on all documents in collection
-      .then((brewery) => {
-        res.status(201).json(brewery);
-      })
-      .catch(handleError);
-  }
-);
-
-// ************************** myFlix Movie API ************************************************
 
 /**
  * GET: Returns a list of ALL movies to the user
@@ -347,6 +168,24 @@ app.get(
 );
 
 /**
+ * GET: Returns a list of ALL users
+ * Request body: Bearer token
+ * @returns array of user objects
+ * @requires passport
+ */
+app.get(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.find() // .find() grabs data on all documents in collection
+      .then((users) => {
+        res.status(201).json(users);
+      })
+      .catch(handleError);
+  }
+);
+
+/**
  * GET: Returns data on a single user (user object) by username
  * Request body: Bearer token
  * @param Username
@@ -354,11 +193,11 @@ app.get(
  * @requires passport
  */
 app.get(
-  "/users/:username",
+  "/users/:Username",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // condition to find specific user based on Username (similar to WHERE in SQL)
-    Users.findOne({ username: req.params.username })
+    Users.findOne({ Username: req.params.Username })
       .then((user) => {
         res.json(user);
       })
@@ -366,6 +205,75 @@ app.get(
   }
 );
 
+/**
+ * POST: Allows new users to register; Username, Password & Email are required fields!
+ * Request body: Bearer token, JSON with user information
+ * @returns user object
+ */
+app.post(
+  "/users",
+  [
+    // Validation logic
+    //minimum value of 5 characters are only allowed
+    check("Username", "Username is required").isLength({ min: 5 }),
+
+    // field can only contain letters and numbers
+    check(
+      "Username",
+      "Username contains non alphanumeric characters - not allowed."
+    ).isAlphanumeric(),
+
+    // Chain of methods like .not().isEmpty() which means "opposite of isEmpty" or "is not empty"
+    check("Password", "Password is required").not().isEmpty(),
+
+    // field must be formatted as an email address
+    check("Email", "Email does not appear to be valid").isEmail(),
+  ],
+  (req, res) => {
+    // check the validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    let hashedPassword = Users.hashPassword(req.body.Password);
+    // check if user already exists
+    Users.findOne({ Username: req.body.Username })
+      .then((user) => {
+        // returns if user exists
+        if (user) {
+          return res.status(400).send(`${req.body.Username} already exists`);
+          // creates and returns if user DOES NOT exist
+        } else {
+          Users.create({
+            // .create takes and object based on schema
+            Username: req.body.Username, // remember 'req.body' is request that user sends
+            Password: hashedPassword, // Hashes password entered  when registering before storing in MongoDB
+            Email: req.body.Email,
+            Birthday: req.body.Birthday,
+          })
+            .then((user) => {
+              res.status(201).json(user);
+            })
+            .catch(handleError);
+        }
+      })
+      .catch(handleError);
+  }
+);
+
+// Defined for API endpoints
+//     const newUser = req.body;
+
+//     if (newUser.name) {
+//         newUser.id = uuid.v4();
+//         users.push(newUser);
+//         // status code 201 = created
+//         res.status(201).json(newUser);
+//     } else {
+//         // status code 400 = bad request
+//         res.status(400).send('users need name');
+//     }
 /**
  * PUT: Allow users to update their user info (find by username)
  * Request body: Bearer token, updated user info
@@ -425,7 +333,7 @@ app.put(
 );
 
 /**
- * POST: Allows users to add a movie to their list of favorites //////////////////////////////////////////////////////////
+ * POST: Allows users to add a movie to their list of favorites
  * Request body: Bearer token
  * @param username
  * @param movieId
@@ -555,13 +463,10 @@ app.delete(
   }
 );
 
-// catches and logs error if occurs. Should always be defined last
+// catches and logs error if occurs
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  console.log("Error object:", err);
-  res
-    .status(500)
-    .send("Oopps! Something went wrong. Check back in a little later.");
+  res.status(500).send("Oopps! Something Broke!");
 });
 
 // process.env.PORT listens for pre-configured port number or, if not found, set port to pertain port number
